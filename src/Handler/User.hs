@@ -45,13 +45,9 @@ postUserLoginR = do
         Just (Entity userId (User {..})) | validPwd && validEmail-> do
             token <- userIdToToken userId
             return $ object
-                [ "user" .= object
-                    [ "email"       .= userEmail
-                    , "token"       .= token
-                    , "createdAt"   .= userCreatedAt
-                    , "updatedAt"   .= userUpdatedAt
+                    [
+                        "token"       .= token
                     ]
-                ]
             where
                 validPwd = T.length loginPassword == passwordLength && (verifyPassword loginPassword userPassword)
                 validEmail = verifyEmail userEmail

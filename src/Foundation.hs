@@ -123,6 +123,7 @@ instance Yesod App where
     isAuthorized RobotsR _ = return Authorized
     isAuthorized UserLoginR _ = return Authorized
     isAuthorized (StaticR _) _ = return Authorized
+    isAuthorized CryptoR _ = isAuthenticated
 
     -- the profile route requires that the user is authenticated, so we
     -- delegate to that function

@@ -78,30 +78,16 @@ instance Yesod App where
     errorHandler (InvalidArgs ia) = selectRep $ do
         provideRep $ return $ object ["message" .= ("Campos inválidos" :: Text)]
         provideRep $ return ("Campos inválidos: " <> T.intercalate " " ia)
-        provideRep $ defaultLayout $ defaultMessageWidget
-            "Campos inválidos"
-            [hamlet|
-                <ul>
-                    $forall msg <- ia
-                        <li>#{msg}
-            |]
 
     errorHandler NotFound = selectRep $ do
         provideRep $ return $ object ["message" .= ("Endpoint não encontrado" :: Text)]
         provideRep $ return ("Endpoint não encontrado" :: Text)
-        provideRep $ defaultLayout $ do
-            r <- waiRequest
-            let path' = TE.decodeUtf8With TEE.lenientDecode $ W.rawPathInfo r
-            defaultMessageWidget "Endpoint não encontrado" [hamlet|<p>#{path'}|]
 
     
     errorHandler (PermissionDenied msg) = selectRep $ do
         provideRep $
             return $ object ["message" .= ("Token inválido" :: Text)]
         provideRep $ return ("Token inválido" :: Text)
-        provideRep $ defaultLayout $ defaultMessageWidget
-            "Token inválido"
-            [hamlet|<p>#{msg}|]
 
     errorHandler e = defaultErrorHandler e
 

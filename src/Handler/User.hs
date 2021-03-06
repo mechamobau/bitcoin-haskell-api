@@ -9,6 +9,7 @@
 module Handler.User where
 
 import Import
+import Text.Read as RT
 import Data.Text as T
 import qualified Yesod.Auth.Util.PasswordStore as PS
 import qualified Data.ByteString.Char8 as BC
@@ -35,6 +36,9 @@ instance ToJSON Login where
 passwordLength :: Int
 passwordLength = 6
 
+stringToInt :: String -> Maybe Int
+stringToInt = RT.readMaybe
+
 postUserLoginR :: Handler Value
 postUserLoginR = do
     (Login {..}) <- (requireCheckJsonBody :: Handler Login)
@@ -42,14 +46,15 @@ postUserLoginR = do
     mUser <- runDB $ getBy $ UniqueUserEmail loginEmail
 
     case mUser of
-        Just (Entity userId (User {..})) | validPwd && validEmail-> do
+        Just (Entity userId (User {..})) | validEmail && validPwd-> do
             token <- userIdToToken userId
             return $ object
                     [
                         "token"       .= token
                     ]
             where
-                validPwd = T.length loginPassword == passwordLength && (verifyPassword loginPassword userPassword)
+                validPwdLength = maybe False (\password' -> Import.length (show password')==passwordLength) (stringToInt $ T.unpack loginPassword)
+                validPwd = validPwdLength && (verifyPassword loginPassword userPassword)
                 validEmail = verifyEmail userEmail
 
         _ -> invalidArgs ["wrong password or email"]

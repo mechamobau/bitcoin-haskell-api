@@ -94,6 +94,15 @@ instance Yesod App where
             let path' = TE.decodeUtf8With TEE.lenientDecode $ W.rawPathInfo r
             defaultMessageWidget "Endpoint não encontrado" [hamlet|<p>#{path'}|]
 
+    
+    errorHandler (PermissionDenied msg) = selectRep $ do
+        provideRep $
+            return $ object ["message" .= ("Token inválido" :: Text)]
+        provideRep $ return ("Token inválido" :: Text)
+        provideRep $ defaultLayout $ defaultMessageWidget
+            "Token inválido"
+            [hamlet|<p>#{msg}|]
+
     errorHandler e = defaultErrorHandler e
 
     -- Store session data on the client in encrypted cookies,

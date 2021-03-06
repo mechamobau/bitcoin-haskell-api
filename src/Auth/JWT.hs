@@ -17,7 +17,6 @@ import           Web.JWT              as JWT
 lookupToken :: MonadHandler m => m (Maybe Text)
 lookupToken = do
   mAuth <- lookupHeader "Authorization"
-  print (extractToken . decodeUtf8 =<< mAuth)
   return $ extractToken . decodeUtf8 =<< mAuth
 
 -- | Create a token out of a given JSON 'Value'

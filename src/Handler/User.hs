@@ -11,6 +11,9 @@ module Handler.User where
 import Import
 import Data.Text as T
 import qualified Yesod.Auth.Util.PasswordStore as PS
+import qualified Data.ByteString.Char8 as BC
+import qualified Text.Email.Validate  as Email
+import           Data.CaseInsensitive as CI
 
 data Login = Login
                 { loginEmail    :: T.Text
@@ -36,7 +39,7 @@ postUserLoginR = do
     mUser <- runDB $ getBy $ UniqueUserEmail loginEmail
 
     case mUser of
-        Just (Entity userId (User {..})) -> do
+        Just (Entity userId (User {..})) | validPwd && validEmail-> do
             token <- userIdToToken userId
             return $ object
                 [ "user" .= object
@@ -46,9 +49,11 @@ postUserLoginR = do
                     , "updatedAt"   .= userUpdatedAt
                     ]
                 ]
-            where validPwd = verifyPassword loginPassword userPassword
+            where
+                validPwd = verifyPassword loginPassword userPassword
+                validEmail = verifyEmail userEmail
 
-        _ -> notAuthenticated
+        _ -> invalidArgs ["wrong password or email"]
 
 -- postCommentR :: Handler Value
 -- postCommentR = do
@@ -66,6 +71,9 @@ postUserLoginR = do
 verifyPassword :: Text -> Text -> Bool
 verifyPassword rawPassword dbPassword =
   PS.verifyPassword (encodeUtf8 rawPassword) $ encodeUtf8 dbPassword
+
+verifyEmail :: Text -> Bool
+verifyEmail email = Email.isValid $ encodeUtf8 email
 
 -- | Encode a 'User' with a JWT authentication token.
 -- encodeUser :: UserId -> User -> Handler Value

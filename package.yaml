@@ -46,6 +46,7 @@ dependencies:
   - containers
   - generic-deriving
   - utf8-string
+  - req
   - jwt >= 0.7.2
 
 # The library contains all of our application code. The executable

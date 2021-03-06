@@ -32,6 +32,9 @@ instance ToJSON Login where
         ,   "password"  .= password
         ]
 
+passwordLength :: Int
+passwordLength = 6
+
 postUserLoginR :: Handler Value
 postUserLoginR = do
     (Login {..}) <- (requireCheckJsonBody :: Handler Login)
@@ -50,7 +53,7 @@ postUserLoginR = do
                     ]
                 ]
             where
-                validPwd = verifyPassword loginPassword userPassword
+                validPwd = T.length loginPassword == passwordLength && (verifyPassword loginPassword userPassword)
                 validEmail = verifyEmail userEmail
 
         _ -> invalidArgs ["wrong password or email"]

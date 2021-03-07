@@ -8,4 +8,4 @@
 
 /api/               HomeR           GET
 /api/login          UserLoginR      POST
-/api/crypto/btc     CryptoR         GET
+/api/crypto/btc     CryptoR         GET POST

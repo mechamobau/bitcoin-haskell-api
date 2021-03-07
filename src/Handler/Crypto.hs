@@ -31,9 +31,8 @@ import Network.HTTP.Req             as REQ
 
 import Types.Currency
 
-
 -------------------------------------------------------
--- | Router handlers
+-- | Route handlers
 -------------------------------------------------------
 getCryptoR :: Handler Value
 getCryptoR = do

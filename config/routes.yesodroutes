@@ -6,6 +6,5 @@
 /favicon.ico        FaviconR        GET
 /robots.txt         RobotsR         GET
 
-/api/               HomeR           GET
 /api/login          UserLoginR      POST
 /api/crypto/btc     CryptoR         GET POST

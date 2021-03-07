@@ -110,7 +110,6 @@ instance Yesod App where
         -> Bool       -- ^ Whether or not this is a "write" request.
         -> Handler AuthResult
     -- Routes not requiring authentication.
-    isAuthorized HomeR _ = isAuthenticated
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
     isAuthorized UserLoginR _ = return Authorized
@@ -173,9 +172,9 @@ instance YesodAuth App where
     type AuthId App = UserId
 
     -- Where to send a user after successful login
-    loginDest _ = HomeR
+    loginDest _ = UserLoginR
     -- Where to send a user after logout
-    logoutDest _ = HomeR
+    logoutDest _ = UserLoginR
     -- Override the above two destinations when a Referer: header is present
 
     redirectToReferer _ = True

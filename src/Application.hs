@@ -46,7 +46,6 @@ import           System.Environment                   (lookupEnv)
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
 import Handler.Common
-import Handler.Home
 import Handler.User
 import Handler.Crypto
 

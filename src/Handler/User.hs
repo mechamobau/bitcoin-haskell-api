@@ -10,38 +10,20 @@ module Handler.User where
 
 import Import
 import Text.Read as RT
-import Data.Text as T
 import qualified Yesod.Auth.Util.PasswordStore as PS
-import qualified Data.ByteString.Char8 as BC
 import qualified Text.Email.Validate  as Email
-import           Data.CaseInsensitive as CI
 
-data Login = Login
-                { loginEmail    :: T.Text
-                , loginPassword :: T.Text
-                } deriving (Show)
+import Data.Text as T
 
-instance FromJSON Login where
-    parseJSON (Object v) =
-        Login   <$> v .: "email"
-                <*> v .: "password"
+import Types.UserLogin
 
-instance ToJSON Login where
-    toJSON (Login email password) =
-        object [
-            "email"     .= email
-        ,   "password"  .= password
-        ]
-
-passwordLength :: Int
-passwordLength = 6
-
-stringToInt :: String -> Maybe Int
-stringToInt = RT.readMaybe
+-------------------------------------------------------
+-- | Route handlers
+-------------------------------------------------------
 
 postUserLoginR :: Handler Value
 postUserLoginR = do
-    (Login {..}) <- (requireCheckJsonBody :: Handler Login)
+    (UserLogin {..}) <- (requireCheckJsonBody :: Handler UserLogin)
 
     mUser <- runDB $ getBy $ UniqueUserEmail loginEmail
 
@@ -59,9 +41,24 @@ postUserLoginR = do
 
         _ -> invalidArgs ["wrong password or email"]
 
+
+-------------------------------------------------------
+-- | Constants
+-------------------------------------------------------
+
+passwordLength :: Int
+passwordLength = 6
+
+-------------------------------------------------------
+-- | Helper functions
+-------------------------------------------------------
+
 verifyPassword :: Text -> Text -> Bool
 verifyPassword rawPassword dbPassword =
   PS.verifyPassword (encodeUtf8 rawPassword) $ encodeUtf8 dbPassword
 
 verifyEmail :: Text -> Bool
 verifyEmail email = Email.isValid $ encodeUtf8 email
+
+stringToInt :: String -> Maybe Int
+stringToInt = RT.readMaybe

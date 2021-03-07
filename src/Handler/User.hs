@@ -59,38 +59,9 @@ postUserLoginR = do
 
         _ -> invalidArgs ["wrong password or email"]
 
--- postCommentR :: Handler Value
--- postCommentR = do
---     -- requireCheckJsonBody will parse the request body into the appropriate type, or return a 400 status code if the request JSON is invalid.
---     -- (The ToJSON and FromJSON instances are derived in the config/models file).
---     comment <- (requireCheckJsonBody :: Handler Comment)
-
---     -- The YesodAuth instance in Foundation.hs defines the UserId to be the type used for authentication.
---     maybeCurrentUserId <- maybeAuthId
---     let comment' = comment { commentUserId = maybeCurrentUserId }
-
---     insertedComment <- runDB $ insertEntity comment'
---     returnJson insertedComment
-
 verifyPassword :: Text -> Text -> Bool
 verifyPassword rawPassword dbPassword =
   PS.verifyPassword (encodeUtf8 rawPassword) $ encodeUtf8 dbPassword
 
 verifyEmail :: Text -> Bool
 verifyEmail email = Email.isValid $ encodeUtf8 email
-
--- | Encode a 'User' with a JWT authentication token.
--- encodeUser :: UserId -> User -> Handler Value
--- encodeUser userId User {..} = do
---   token <- userIdToToken userId
---   return $ object
---     [ "user" .= object
---         [ "email" .= userEmail
---         , "username" .= userUsername
---         , "token" .= token
---         , "bio" .= userBio
---         , "image" .= userImage
---         , "createdAt" .= userCreatedAt
---         , "updatedAt" .= userUpdatedAt
---         ]
---     ]

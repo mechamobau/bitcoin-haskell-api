@@ -17,15 +17,12 @@ import Import.NoFoundation
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Text.Jasmine         (minifym)
 import Control.Monad.Logger (LogSource)
-import qualified Network.Wai                        as W
 
 import           Data.Aeson           (Result (Success), fromJSON)
 import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Core.Types     (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
 import qualified Data.Text                          as T
-import qualified Data.Text.Encoding                 as TE
-import qualified Data.Text.Encoding.Error           as TEE
 
 import qualified Yesod.Auth.Message as AuthMsg
 
@@ -84,7 +81,7 @@ instance Yesod App where
         provideRep $ return ("Endpoint não encontrado" :: Text)
 
     
-    errorHandler (PermissionDenied msg) = selectRep $ do
+    errorHandler (PermissionDenied _) = selectRep $ do
         provideRep $
             return $ object ["message" .= ("Token inválido" :: Text)]
         provideRep $ return ("Token inválido" :: Text)
